@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mukuru - SheHacks</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Default to light theme */
+        body {
+            background-color: white;
+            color: rgb(55, 58, 54);
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+    
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #f05423;
+            border-bottom: 1px solid #ddd;
+        }
+    
+        .header img {
+            height: 95px;
+            filter: sepia(0.5) saturate(2) hue-rotate(-10deg);  
+        }
+    
+        .buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between buttons */
+        }
+    
+        .signup-btn,
+        .login-btn {
+            padding: 10px 15px;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 20px;
+            text-align: center;
+            text-decoration: none;
+        }
+    
+        .signup-btn {
+            background-color: #ff7d2d;
+            color: white;
+        }
+    
+        .login-btn {
+            background-color: white;
+            color: #ff7d2d;
+            border: 2px solid #ff7d2d;
+        }
+    
+        .signup-btn:hover {
+            background-color: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+    
+        .login-btn:hover {
+            background-color: #ff7d2d;
+            color: white;
+            border-color: #ff7d2d;
+        }
+    
+        .menu-icon {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+    
+        .intro {
+            font-size: 2.5rem;
+            color: #f05423;
+            margin-bottom: 20px;
+        }
+    
+        .pl-1 {
+            padding-left: 1rem;
+        }
+    
+        .pr-2 {
+            padding-right: 2rem;
+        }
+    
+        .has-white-color {
+            color: white;
+        }
+    
+        .has-large-font-size {
+            font-size: 1.2rem;
+        }
+    
+        .footer-info {
+            font-family: sans-serif;
+            color: rgb(55, 58, 54);
+        }
+    
+        /* Dark theme */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: rgb(55, 58, 54);
+                color: white;
+            }
+    
+            .header {
+                background-color: #333;
+                border-bottom: none;
+            }
+    
+            .header img {
+                filter: brightness(1) invert(1);
+                height: 95px;
+                filter: sepia(0.5) saturate(2) hue-rotate(-10deg);  
+            }
+    
+            .signup-btn {
+                background-color: #f05423;
+                color: white;
+                border: 2px solid #f05423;
+            }
+    
+            .signup-btn:hover {
+                background-color: #6c757d;
+                color: white;
+                border-color: #f05423;
+            }
+    
+            .login-btn {
+                background-color: #6c757d;
+                color: white;
+                border: 2px solid #6c757d;
+                border-color: #f05423;
+            }
+    
+            .login-btn:hover {
+                background-color: #f05423;
+                color: white;
+                border-color: #f05423;
+            }
+    
+            .signup-btn a,
+            .login-btn a {
+                color: inherit;
+                text-decoration: none;
+                display: block;
+            }
+    
+            .breadcrumb a {
+                color: #f05423;
+            }
+    
+            .footer-info {
+                color: white;
+            }
+    
+            .content-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+
+        /* Responsive image */
+        .responsive-img {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Responsive button sizes */
+        @media (max-width: 768px) {
+            .signup-btn,
+            .login-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .signup-btn,
+            .login-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .buttons {
+                flex-direction: column;
+                width: 100%;
+                align-items: stretch;
+            }
+
+            .buttons .signup-btn,
+            .buttons .login-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <a href="https://www.mukuru.com/sa/">
+            <img class="header-image is-logo-image" alt="Mukuru" src="https://www.mukuru.com/wp-content/uploads/2022/11/Mukuru-Logo-final.webp">
+        </a>
+        <div class="buttons">
+            <button class="signup-btn"><a href="https://www.mukuru.com/sa/sign-up-with-mukuru/">Sign up</a></button>
+            <button class="login-btn"><a href="https://mobile.mukuru.com/mobi/login">Login</a></button>
+        </div>
+    </header>
+
+    <!-- nav bar -->
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page"><a href="locationfinder.html">Mukuru Near You</a></li>
+        </ol>
+    </nav>
+    <!-- nav bar ends -->
+
+    <!-- Testing -->
+    <div class="px-4 pt-5 my-5 text-center border-bottom">
+        <div class="col-lg-6 mx-auto">
+            <h1 class="display-4 fw-bold text-body-emphasis">Hi, </h1>
+            <p class="lead mb-4">Welcome to Mukuru PI-PO Systems;</p>
+        </div>
+        <!-- about mukuru -->
+        <div class="container px-4 py-5" id="featured-3">
+            <h2 class="pb-2">About PI-PO</h2>
+            <p>
+                PI-PO by Mukuru is for the people and aims to make life and transfers easy and convenient in 
+                every way possible. No need to break a sweat when you can find a Mukuru point near you. 
+            </p>
+            <img src="WA.png" class="responsive-img" alt="WA Image">
+            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                <div class="feature col">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3" style="background-color: orange-red;">
+                        <img src="receipt.svg" alt="receipt svg from Bootstrap icons" height="30">
+                    </div>
+                    <h3 class="fs-2">Pay-In Points</h3>
+                    <p>Mukuru Pay-Ins allows you to find the nearest Mukuru location to send money transfers to your loved ones </p>
+                </div>
+                <div class="feature col">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3" style="background-color: orange-red;">
+                        <img src="currency-exchange.svg" alt="currency-exchange svg from bootstrap." height="30">
+                    </div>
+                    <h3 class="fs-2">Pay-Out Points</h3>
+                    <p>Mukuru Pay-Outs allow you to receive money from your loved ones at the nearest Mukuru location.</p>
+                </div>
+                <div class="feature col">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3" style="background-color: orange-red;">
+                        <img src="three-dots(1).svg" alt="three dots svg from bootstrap" height="30">
+                    </div>
+                    <h3 class="fs-2">Additional Info</h3>
+                    <p>Signing up for Mukuru Money is easy and transfers are twice as easy.</p>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+            <button type="button" class="signup-btn"><a href="locationfinder.html">Continue</a></button>
+        </div>
+        <section>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+                <button type="button" class="signup-btn"><a href="https://www.mukuru.com/sa/help-support/">Contact Us</a></button>
+            </div>
+            <footer>
+                <p class="footer-info">&copy; <span id="currentYear"></span> - Mukuru. All rights reserved. Mukuru Financial Services (Pty) Ltd is an authorized Financial Services Provider FSP45517 and a registered Credit Provider NCRCP9244.</p>
+            </footer>
+        </section>
+    </div>
+    
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

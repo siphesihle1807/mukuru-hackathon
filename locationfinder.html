@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mukuru - SheHacks</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <style>
+        .footer-info {
+            font-family: sans-serif;
+        }
+
+        body {
+            background-color: white;
+            color: rgb(55, 58, 54);
+        }
+
+        .btn-orange {
+            background-color: #f05423;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background-color: #d94d1f;
+            color: white;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 20px;
+        }
+
+        #noResults {
+            display: none;
+            text-align: center;
+            color: red;
+            margin-top: 10px;
+        }
+
+        .spinner-border-orange {
+            color: #f05423;
+        }
+
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: rgb(55, 58, 54);
+                color: white;
+            }
+
+            .navbar {
+                background-color: #333;
+            }
+
+            .nav-link {
+                color: white;
+            }
+
+            .footer-info {
+                color: white;
+            }
+
+            .breadcrumb a {
+                color: #f05423;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="mb-4">
+        <a href="https://www.mukuru.com/sa/">
+            <img class="header-image is-logo-image" alt="Mukuru" src="https://www.mukuru.com/wp-content/uploads/2022/11/Mukuru-Logo-final.webp" width="300" height="95">
+        </a>
+    </header>
+
+    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a href="locationfinder.html">Mukuru Near You</a></li>
+        </ol>
+    </nav>
+
+    <div class="container mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" id="locationSearch" class="form-control" placeholder="Enter city, country or use current location">
+            </div>
+            <div class="col-md-2">
+                <button id="searchButton" class="btn btn-orange">Search</button>
+            </div>
+            <div class="col-md-4">
+                <button id="useCurrentLocation" class="btn btn-secondary">Use Current Location</button>
+            </div>
+        </div>
+        <div id="loading">
+            <p>Loading locations...</p>
+            <div class="spinner-border spinner-border-orange" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div id="noResults">
+            <p>No locations found for your search query.</p>
+        </div>
+    </div>
+
+    <div id="map" style="height: 500px;"></div>
+
+    <footer class="mt-4">
+        <p class="footer-info">&copy; <span id="currentYear"></span> - Mukuru. All rights reserved. Mukuru Financial Services (Pty) Ltd is an authorized Financial Services Provider FSP45517 and a registered Credit Provider NCRCP9244.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        const map = L.map('map').setView([-29.85, 31.02], 6); // Centered on South Africa
+    
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+    
+        async function fetchPayOutPartners() {
+            try {
+                const response = await fetch('https://api-ubt.mukuru.com/taurus/v1/resources/pay-out-partners');
+                if (!response.ok) throw new Error('Failed to fetch payout partners.');
+                const payOutPartners = await response.json();
+                return payOutPartners;
+            } catch (error) {
+                showError('Error fetching payout partners: ' + error.message);
+                return [];
+            }
+        }
+    
+        async function fetchLocations(payOutPartnerGuid) {
+            try {
+                const response = await fetch(`https://api-ubt.mukuru.com/taurus/v1/resources/pay-out-partners/${payOutPartnerGuid}/locations`);
+                if (!response.ok) throw new Error('Failed to fetch locations.');
+                const locations = await response.json();
+                return locations;
+            } catch (error) {
+                showError('Error fetching locations: ' + error.message);
+                return [];
+            }
+        }
+    
+        function plotMukuruLocations(locations) {
+            if (locations.length === 0) {
+                document.getElementById('noResults').style.display = 'block';
+            } else {
+                document.getElementById('noResults').style.display = 'none';
+                locations.forEach(location => {
+                    L.circle([location.latitude, location.longitude], {
+                        color: '#f05423', // Orange border color
+                        fillColor: '#f05423', // Orange fill color
+                        fillOpacity: 0.5,
+                        radius: 1000 // Adjust the radius as needed
+                    }).addTo(map)
+                      .bindPopup(`<b>${location.name}</b><br>${location.address}`);
+                });
+    
+                // Fit the map bounds to the markers
+                const bounds = L.latLngBounds(locations.map(location => [location.latitude, location.longitude]));
+                map.fitBounds(bounds);
+            }
+        }
+    
+        async function searchLocations(query) {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+            const partners = await fetchPayOutPartners();
+            const allLocations = [];
+            for (const partner of partners) {
+                const locations = await fetchLocations(partner.guid);
+                allLocations.push(...locations);
+            }
+    
+            const filteredLocations = allLocations.filter(location => {
+                const searchText = query.toLowerCase();
+                return location.name.toLowerCase().includes(searchText) || location.address.toLowerCase().includes(searchText);
+            });
+    
+            map.eachLayer(layer => {
+                if (layer instanceof L.Circle) {
+                    map.removeLayer(layer);
+                }
+            });
+    
+            plotMukuruLocations(filteredLocations);
+            document.getElementById('loading').style.display = 'none';
+        }
+    
+        function showError(message) {
+            alert(message);
+        }
+    
+        async function searchAndTimeout(query) {
+            const timeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Timeout: No locations found')), 30000)
+            );
+            try {
+                const searchPromise = searchLocations(query);
+                await Promise.race([searchPromise, timeout]);
+            } catch (error) {
+                document.getElementById('noResults').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    
+        document.getElementById('searchButton').addEventListener('click', () => {
+            const query = document.getElementById('locationSearch').value.trim();
+            if (query) {
+                searchAndTimeout(query);
+            } else {
+                alert('Please enter a city, country, or use your current location.');
+            }
+        });
+    
+        async function plotLocationsNearUser(lat, lon) {
+            document.getElementById('loading').style.display = 'block';
+            const partners = await fetchPayOutPartners();
+            const allLocations = [];
+            for (const partner of partners) {
+                const locations = await fetchLocations(partner.guid);
+                allLocations.push(...locations);
+            }
+    
+            const filteredLocations = allLocations.filter(location => {
+                const distance = map.distance([lat, lon], [location.latitude, location.longitude]);
+                return distance <= 5000; // 5km radius
+            });
+    
+            map.eachLayer(layer => {
+                if (layer instanceof L.Circle) {
+                    map.removeLayer(layer);
+                }
+            });
+    
+            plotMukuruLocations(filteredLocations);
+            document.getElementById('loading').style.display = 'none';
+        }
+    
+        document.getElementById('useCurrentLocation').addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    map.setView([lat, lon], 12); // Zoom into the user's location
+                    plotLocationsNearUser(lat, lon);
+                }, () => showError("Unable to retrieve your location."));
+            } else {
+                showError("Geolocation is not supported by your browser.");
+            }
+        });
+    
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    
+</body>
+</html>
